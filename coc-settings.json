@@ -97,7 +97,11 @@
 
 	"signature.target": "float",
 
-	"snippets.ultisnips.directories": ["UltiSnips"],
+	"snippets.ultisnips.directories": [
+		"UltiSnips",
+		"$HOME/.config/nvim/UltiSnips/",
+		"$HOME/.config/nvim/plugged/vim-snippets/UltiSnips/"
+	],
 
 	"typescript.suggestionActions.enabled": true,
 	"typescript.format.enabled": true,

@@ -8,6 +8,7 @@ endif
 
 " +================ System =================+ "
 
+filetype plugin on
 " set secure
 set number
 set cursorline
@@ -75,9 +76,17 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 " 
 Plug 'frazrepo/vim-rainbow'
+Plug 'jiangmiao/auto-pairs'
 " Plug 'Lokaltog/vim-easymotion'
 Plug 'liuchengxu/vista.vim'
 Plug 'SirVer/ultisnips'
+
+Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins', 'for': ['python', 'vim-plug'] }
+" Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug'] }
+Plug 'instant-markdown/vim-instant-markdown', { 'for': 'markdown' }
+Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle', 'for': ['text', 'markdown', 'vim-plug'] }
+Plug 'mzlogin/vim-markdown-toc', { 'for': ['gitignore', 'markdown', 'vim-plug'] }
+Plug 'dkarter/bullets.vim'
 
 call plug#end()
 
@@ -147,10 +156,13 @@ let g:coc_global_extensions = [
 	\ 'coc-tsserver',
 	\ 'coc-vetur',
 	\ 'coc-vimlsp',
+	\ 'coc-highlight',
 	\ 'coc-yaml']
 
 " autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
-" autocmd CursorHold * silent call CocActionAsync('highlight')
+" Highlight the symbol and its references when holding the cursor
+autocmd CursorHold * silent call CocActionAsync('highlight')
+highlight CocHighlightText ctermfg=Yellow ctermbg=Gray
 
 nmap <silent> g[ <Plug>(coc-diagnostic-prev)
 nmap <silent> g] <Plug>(coc-diagnostic-next)
@@ -231,3 +243,36 @@ let g:NERDSpaceDelims = 1
 let g:vista_default_executive = 'coc'
 nmap <silent> <leader>t :Vista!!<CR>
 nmap <silent> <leader>r :Vista focus<CR>
+
+
+" +================ vim-instant-markdown.nvim =================+ "
+let g:instant_markdown_slow = 0
+let g:instant_markdown_autostart = 0
+" let g:instant_markdown_open_to_the_world = 1
+" let g:instant_markdown_allow_unsafe_content = 1
+" let g:instant_markdown_allow_external_content = 0
+" let g:instant_markdown_mathjax = 1
+" let g:instant_markdown_logfile = '/tmp/instant_markdown.log'
+let g:instant_markdown_autoscroll = 1
+
+
+" +================ vim-table-mode.nvim =================+ "
+noremap <leader>tm :TableModeToggle<CR>
+" let g:table_mode_disable_mappings = 1
+let g:table_mode_cell_text_object_i_map = 'k<Bar>'
+
+" +================ bullets.nvim =================+ "
+" let g:bullets_set_mappings = 0
+let g:bullets_enabled_file_types = [
+			\ 'markdown',
+			\ 'text',
+			\ 'gitcommit',
+			\ 'scratch'
+			\]
+
+" +================ vim-markdown-toc.nvim =================+ "
+" let g:vmt_auto_update_on_save = 0
+" let g:vmt_dont_insert_fence = 1
+let g:vmt_cycle_list_item_markers = 1
+let g:vmt_fence_text = 'TOC'
+let g:vmt_fence_closing_text = '/TOC'
