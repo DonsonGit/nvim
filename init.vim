@@ -81,7 +81,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'liuchengxu/vista.vim'
 Plug 'SirVer/ultisnips'
 
-Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins', 'for': ['python', 'vim-plug'] }
+" Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins', 'for': ['python', 'vim-plug'] }
 " Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug'] }
 Plug 'instant-markdown/vim-instant-markdown', { 'for': 'markdown' }
 Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle', 'for': ['text', 'markdown', 'vim-plug'] }
@@ -89,6 +89,25 @@ Plug 'mzlogin/vim-markdown-toc', { 'for': ['gitignore', 'markdown', 'vim-plug'] 
 Plug 'dkarter/bullets.vim'
 
 call plug#end()
+
+" +================ auto run =================+ "
+
+noremap <leader>ww :w<CR>
+noremap <leader>wq :wq<CR>
+noremap <leader>q :q<CR>
+noremap r :call CompileRunGcc()<CR>
+func! CompileRunGcc()
+	exec "w"
+	if &filetype == 'python'
+		set splitbelow
+		:sp
+		:term python %
+	elseif &filetype == 'sh'
+		:!time bash %
+	elseif &filetype == 'go'
+		:!time go run %
+	endif
+endfunc
 
 " +================ palenight.nvim =================+ "
 
