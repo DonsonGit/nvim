@@ -1,94 +1,10 @@
-
-" +================ Auto load for first time uses =================+ "
-
-if empty(glob('~/.config/nvim/autoload/plug.vim'))
-	silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
 " +================ System =================+ "
 
-filetype plugin on
-" set secure
-set number
-set cursorline
-set hidden
-" set noexpandtab
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-" set autoindent
-set scrolloff=4
-set ttimeoutlen=0
-set notimeout
-" set viewoptions=cursor,folds,slash,unix
-set wrap
-set textwidth=0
-" set indentexpr=
-" set foldmethod=indent
-" set foldlevel=99
-" set foldenable
-" set formatoptions-=tc
-" set noshowmode
-" set showcmd
-" set wildmenu
-" set ignorecase
-" set smartcase
-" set shortmess+=c
-" set inccommand=split
-" set completeopt=longest,noinsert,menuone,noselect,preview
-" set ttyfast > this attr has been removed
-set colorcolumn=100
-set updatetime=300
-set virtualedit=block
-set background=dark
-set synmaxcol=128
-set cmdheight=2
-set signcolumn=yes
-" set lazyredraw
-set nolazyredraw
-silent !mkdir -p ~/.config/nvim/tmp/backup
-silent !mkdir -p ~/.config/nvim/tmp/undo
-set backupdir=~/.config/nvim/tmp/backup
-set directory=~/.config/nvim/tmp/backup
-if has('persistent_undo')
-	set undofile
-	set undodir=~/.config/nvim/tmp/undo
-endif
-
-let mapleader="\<space>"
+source $HOME/.config/nvim/settings.vim
 
 " +================ Plugin =================+ "
 
-call plug#begin('~/.vim/plugged')
-
-Plug 'drewtempelmeyer/palenight.vim'
-" Plug 'vim-airline/vim-airline'
-Plug 'itchyny/lightline.vim'
-" Plug 'preservim/nerdtree'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'ryanoasis/vim-devicons'
-Plug 'preservim/nerdcommenter'
-" 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" 
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-" 
-Plug 'frazrepo/vim-rainbow'
-Plug 'jiangmiao/auto-pairs'
-" Plug 'Lokaltog/vim-easymotion'
-Plug 'liuchengxu/vista.vim'
-Plug 'SirVer/ultisnips'
-
-" Plug 'numirias/semshi', { 'do': ':UpdateRemotePlugins', 'for': ['python', 'vim-plug'] }
-" Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug'] }
-Plug 'instant-markdown/vim-instant-markdown', { 'for': 'markdown' }
-Plug 'dhruvasagar/vim-table-mode', { 'on': 'TableModeToggle', 'for': ['text', 'markdown', 'vim-plug'] }
-Plug 'mzlogin/vim-markdown-toc', { 'for': ['gitignore', 'markdown', 'vim-plug'] }
-Plug 'dkarter/bullets.vim'
-
-call plug#end()
+source $HOME/.config/nvim/plug.vim
 
 " +================ auto run =================+ "
 
