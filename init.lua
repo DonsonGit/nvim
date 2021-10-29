@@ -2,39 +2,100 @@
 -- npm i -g vscode-langservers-extracted
 -- npm i -g typescript typescript-language-server
 
-local cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
+-- local cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
 local fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 local g = vim.g -- a table to access global variables
+local opt = vim.opt -- to set options
+local map_set = vim.api.nvim_set_keymap
+local bmap_set = vim.api.nvim_buf_set_keymap
 
 -- Map leader to space
-g.mapleader = "<space>"
+g.mapleader = ' '
 
--- Bootstrap Paq when needed
-local install_path = fn.stdpath('data') .. '/site/pack/paqs/start/paq-nvim'
+-- Bootstrap packer when needed
+local install_path = fn.stdpath('data') .. '/site/pack/paqs/start/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
-	fn.system({'git', 'clone', '--depth=1', 'https://github.com/savq/paq-nvim.git', install_path})
+	fn.system({'git', 'clone', '--depth=1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
 
-require "paq" {
-	-- "savq/pad-nvim"; 		-- Let Pad manage itself
-	"neovim/nvim-lspconfig"; 	-- Mind the semi-colons
-    "hrsh7th/cmp-nvim-lsp";
-    "hrsh7th/cmp-buffer";
-    "hrsh7th/cmp-path";
-    "hrsh7th/cmp-cmdline";
-    "hrsh7th/nvim-cmp";
-    "hrsh7th/cmp-vsnip";
-    "hrsh7th/vim-vsnip";
-	{"lervag/vimtex", opt=true};	-- Use braces when passing options
-	"rktjmp/lush.nvim";
-	"ellisonleao/gruvbox.nvim";
+-- settings
+vim.o.background = "dark"
+vim.cmd([[
+    syntax enable
+    colorscheme gruvbox
+]])
+opt.backspace = {"indent", "eol", "start"}
+opt.clipboard = "unnamedplus"
+opt.completeopt = "menu,menuone,noselect"
+opt.cursorline = false
+opt.cursorcolumn = false
+opt.encoding = "utf-8"
+opt.smarttab = true
+opt.expandtab = true
+opt.smartindent = true
+opt.autoindent = true
+opt.foldenable = false
+opt.foldmethod = "indent"
+opt.formatoptions = "l"
+opt.hidden = true
+opt.wrap = false
+opt.hlsearch = true
+opt.ignorecase = true
+opt.inccommand = "split"
+opt.incsearch = true
+opt.joinspaces = false
+opt.linebreak = true
+opt.number = true
+opt.list = false
+opt.relativenumber = false
+opt.scrolloff = 4
+opt.shiftround = true
+opt.shiftwidth = 4
+opt.showmode = false
+opt.sidescrolloff = 8
+opt.signcolumn = "yes:1"
+opt.smartcase = true
+opt.smartindent = true
+opt.spelllang = {"en_gb"}
+opt.splitbelow = true
+opt.splitright = true
+opt.tabstop = 4
+opt.termguicolors = true
+opt.cc = "80"
+opt.mouse = "a"
+opt.ruler = true
+opt.cmdheight = 2
+opt.showtabline = 2
+opt.virtualedit = "block"
+opt.undofile = true
+opt.undodir = vim.fn.stdpath("config") .. "/undo"
+
+-- plugins
+require('packer').startup(function ()
+	use "neovim/nvim-lspconfig" 	-- Mind the semi-colons
+    use "hrsh7th/cmp-nvim-lsp"
+    use "hrsh7th/cmp-buffer"
+    use "hrsh7th/cmp-path"
+    use "hrsh7th/cmp-cmdline"
+    use "hrsh7th/nvim-cmp"
+    use "hrsh7th/cmp-vsnip"
+    use "hrsh7th/vim-vsnip"
+	use {"lervag/vimtex", opt=true}	-- Use braces when passing options
+	use "rktjmp/lush.nvim"
+	use "ellisonleao/gruvbox.nvim"
+    use "nathom/filetype.nvim"
+    use {
+        'kyazdani42/nvim-tree.lua',
+        requires = 'kyazdani42/nvim-web-devicons',
+        config = function () require'nvim-tree'.setup{} end
+    }
+    use "rinx/lspsaga.nvim";
     -- "f3fora/cmp-spell";
     -- "folke/tokyonight.nvim";
     -- "jose-elias-alvarez/null-ls.nvim";
     -- "kyazdani42/nvim-tree.lua";
     -- "kyazdani42/nvim-web-devicons";
     -- "lewis6991/gitsigns.nvim";
-    "nathom/filetype.nvim";
     -- "norcalli/nvim-colorizer.lua";
     -- "numToStr/Comment.nvim";
     -- "nvim-lua/plenary.nvim";
@@ -49,7 +110,6 @@ require "paq" {
     -- "phaazon/hop.nvim";
     -- "rmagatti/auto-session";
     -- "savq/paq-nvim";
-    -- "tami5/lspsaga.nvim";
     -- "tpope/vim-repeat";
     -- "tpope/vim-surround";
     -- "wellle/targets.vim";
@@ -57,10 +117,10 @@ require "paq" {
     -- "windwp/nvim-ts-autotag";
     -- "winston0410/cmd-parser.nvim";
     -- "winston0410/range-highlight.nvim"
-}
+end)
 
 -- Do not source the default filetype.vim
-vim.g.did_load_filetypes = 1
+-- vim.g.did_load_filetypes = 1
 
 local cmp = require('cmp')
 cmp.setup({
@@ -122,22 +182,103 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
     buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
     buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+    buf_set_keymap('n', 'gy', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
     buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-    buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-    buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-    buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-    buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+    buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+    buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+    buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+    buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+    buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+    buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+    buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-    buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-    buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+    buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+    buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 end
 
+-- nvim-tree
+
+-- following options are the default
+require'nvim-tree'.setup {
+  -- disables netrw completely
+  disable_netrw       = true,
+  -- hijack netrw window on startup
+  hijack_netrw        = true,
+  -- open the tree when running this setup function
+  open_on_setup       = true,
+  -- will not open on setup if the filetype is in this list
+  ignore_ft_on_setup  = {},
+  -- closes neovim automatically when the tree is the last **WINDOW** in the view
+  auto_close          = true,
+  -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
+  open_on_tab         = false,
+  -- hijacks new directory buffers when they are opened.
+  update_to_buf_dir   = {
+    -- enable the feature
+    enable = true,
+    -- allow to open the tree if it was previously closed
+    auto_open = true,
+  },
+  -- hijack the cursor in the tree to put it at the start of the filename
+  hijack_cursor       = false,
+  -- updates the root directory of the tree on `DirChanged` (when you run `:cd` usually)
+  update_cwd          = false,
+  -- show lsp diagnostics in the signcolumn
+  diagnostics = {
+    enable = false,
+    icons = {
+      hint = "",
+      info = "",
+      warning = "",
+      error = "",
+    }
+  },
+  -- update the focused file on `BufEnter`, un-collapses the folders recursively until it finds the file
+  update_focused_file = {
+    -- enables the feature
+    enable      = true,
+    -- update the root directory of the tree to the one of the folder containing the file if the file is not under the current root directory
+    -- only relevant when `update_focused_file.enable` is true
+    update_cwd  = false,
+    -- list of buffer names / filetypes that will not update the cwd if the file isn't found under the current root directory
+    -- only relevant when `update_focused_file.update_cwd` is true and `update_focused_file.enable` is true
+    ignore_list = {}
+  },
+  -- configuration options for the system open command (`s` in the tree by default)
+  system_open = {
+    -- the command to run this, leaving nil should work in most cases
+    cmd  = nil,
+    -- the command arguments as a list
+    args = {}
+  },
+
+  view = {
+    -- width of the window, can be either a number (columns) or a string in `%`, for left or right side placement
+    width = 30,
+    -- height of the window, can be either a number (columns) or a string in `%`, for top or bottom side placement
+    height = 30,
+    -- Hide the root path of the current folder on top of the tree
+    hide_root_folder = false,
+    -- side of the tree, can be one of 'left' | 'right' | 'top' | 'bottom'
+    side = 'left',
+    -- if true the tree will resize itself after opening a file
+    auto_resize = false,
+    mappings = {
+      -- custom only false will merge the list with the default mappings
+      -- if true, it will only use your list to set the mappings
+      custom_only = false,
+      -- list of mappings to set on the tree manually
+      list = {}
+    }
+  }
+}
+
+bmap_set(0, 'n', '<leader>ee', ':NvimTreeOpen<CR>', {noremap = true})
+bmap_set(0, 'n', '<leader>ee', ':NvimTreeOpen<CR>', {noremap = true})
+
+-- lsp setup
 local sumneko_root_path = fn.stdpath('cache')..'/lspconfig/lua/lua-language-server'
 local sumneko_binary = sumneko_root_path.."/bin/Linux/lua-language-server"
 nvim_lsp.sumneko_lua.setup {
@@ -188,51 +329,3 @@ nvim_lsp.jsonls.setup{on_attach = on_attach;}
 nvim_lsp.tsserver.setup{on_attach = on_attach;}
 nvim_lsp.pyright.setup{on_attach = on_attach;}
 
-local opt = vim.opt -- to set options
-vim.o.background = "dark"
-vim.cmd([[colorscheme gruvbox]])
-opt.backspace = {"indent", "eol", "start"}
-opt.clipboard = "unnamedplus"
-opt.completeopt = "menu,menuone,noselect"
-opt.cursorline = false
-opt.cursorcolumn = false
-opt.encoding = "utf-8"
-opt.smarttab = true
-opt.expandtab = true
-opt.smartindent = true
-opt.autoindent = true
-opt.foldenable = false
-opt.foldmethod = "indent"
-opt.formatoptions = "l"
-opt.hidden = true
-opt.wrap = false
-opt.hlsearch = true
-opt.ignorecase = true
-opt.inccommand = "split"
-opt.incsearch = true
-opt.joinspaces = false
-opt.linebreak = true
-opt.number = true
-opt.list = false
-opt.relativenumber = false
-opt.scrolloff = 4
-opt.shiftround = true
-opt.shiftwidth = 4
-opt.showmode = false
-opt.sidescrolloff = 8
-opt.signcolumn = "yes:1"
-opt.smartcase = true
-opt.smartindent = true
-opt.spelllang = {"en_gb"}
-opt.splitbelow = true
-opt.splitright = true
-opt.tabstop = 4
-opt.termguicolors = true
-opt.cc = "80"
-opt.mouse = "a"
-opt.ruler = true
-opt.cmdheight = 2
-opt.showtabline = 2
-opt.virtualedit = "block"
-opt.undofile = true
-opt.undodir = vim.fn.stdpath("config") .. "/undo"
