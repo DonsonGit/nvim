@@ -109,7 +109,7 @@
 	"tslint.autoFixOnSave": false,
 
 	"explorer.width": 30,
-	"explorer.quitOnOpen": true,
+	"explorer.quitOnOpen": false,
 	"explorer.sources": [
 		{
 			"name": "bookmark",
@@ -169,11 +169,6 @@
 
 	"todolist.autoUpload": true,
 	"todolist.promptForReminder": false,
-
-	"clangd.path": "/Users/hortor/.config/coc/extensions/coc-clangd-data/install/12.0.0/clangd_12.0.0/bin/clangd",
-
-	"go.goplsPath": "/Users/hortor/Documents/workspace/go/bin/gopls",
-	"go.goplsUseDaemon": true,
 
 	"languageserver": {
 		"lua": {

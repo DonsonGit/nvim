@@ -2,3 +2,7 @@ tmp/*
 autoload/*
 
 .netrwhist
+undo/%home%don%workspace%sh%log.sh
+undo/%home%don%.config%nvim%options.lua
+undo/%home%don%.config%nvim%init.lua
+lua/lua-language-server/
