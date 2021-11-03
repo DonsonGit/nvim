@@ -6,14 +6,14 @@
 local fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 local g = vim.g -- a table to access global variables
 local opt = vim.opt -- to set options
-local map_set = vim.api.nvim_set_keymap
+-- local map_set = vim.api.nvim_set_keymap
 local bmap_set = vim.api.nvim_buf_set_keymap
 
 -- Map leader to space
 g.mapleader = ' '
 
 -- Bootstrap packer when needed
-local install_path = fn.stdpath('data') .. '/site/pack/paqs/start/packer.nvim'
+local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
 	fn.system({'git', 'clone', '--depth=1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
@@ -78,38 +78,35 @@ require('packer').startup(function ()
     use "hrsh7th/cmp-path"
     use "hrsh7th/cmp-cmdline"
     use "hrsh7th/nvim-cmp"
-    use "hrsh7th/cmp-vsnip"
     use "hrsh7th/vim-vsnip"
-	use {"lervag/vimtex", opt=true}	-- Use braces when passing options
+    use "nvim-lua/plenary.nvim"
+    use "nvim-lua/popup.nvim";
 	use "rktjmp/lush.nvim"
 	use "ellisonleao/gruvbox.nvim"
     use "nathom/filetype.nvim"
+    use "rinx/lspsaga.nvim";
+    use "numToStr/Comment.nvim";
+    use "nvim-telescope/telescope.nvim"
+    use "norcalli/nvim-colorizer.lua";
     use {
         'kyazdani42/nvim-tree.lua',
         requires = 'kyazdani42/nvim-web-devicons',
         config = function () require'nvim-tree'.setup{} end
     }
-    use "rinx/lspsaga.nvim";
+    use {
+        "lewis6991/gitsigns.nvim",
+    }
+    use "nvim-treesitter/nvim-treesitter"
     -- "f3fora/cmp-spell";
     -- "folke/tokyonight.nvim";
     -- "jose-elias-alvarez/null-ls.nvim";
-    -- "kyazdani42/nvim-tree.lua";
-    -- "kyazdani42/nvim-web-devicons";
     -- "lewis6991/gitsigns.nvim";
-    -- "norcalli/nvim-colorizer.lua";
-    -- "numToStr/Comment.nvim";
-    -- "nvim-lua/plenary.nvim";
-    -- "nvim-lua/popup.nvim";
     -- "nvim-lualine/lualine.nvim";
-    -- "nvim-telescope/telescope-fzy-native.nvim";
-    -- "nvim-telescope/telescope.nvim";
-    -- "nvim-treesitter/nvim-treesitter";
     -- "octaltree/cmp-look";
     -- "onsails/lspkind-nvim";
     -- "p00f/nvim-ts-rainbow";
     -- "phaazon/hop.nvim";
     -- "rmagatti/auto-session";
-    -- "savq/paq-nvim";
     -- "tpope/vim-repeat";
     -- "tpope/vim-surround";
     -- "wellle/targets.vim";
@@ -118,6 +115,35 @@ require('packer').startup(function ()
     -- "winston0410/cmd-parser.nvim";
     -- "winston0410/range-highlight.nvim"
 end)
+
+-- gitsigns
+
+require'gitsigns'.setup{}
+
+-- nvim-colorizer
+
+require'colorizer'.setup{}
+
+-- nvim-telescope
+
+require'telescope'.setup {}
+
+bmap_set(0, 'n', '<leader><C-p>', ':Telescope find_files<CR>', {noremap = true})
+bmap_set(0, 'n', '<leader><C-f>', ':Telescope live_grep<CR>', {noremap = true})
+
+require'nvim-treesitter.configs'.setup {
+    ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+    ignore_install = {}, -- List of parsers to ignore installing
+    highlight = {
+        enable = true,              -- false will disable the whole extension
+        disable = {},  -- list of language that will be disabled
+        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+        -- Using this option may slow down your editor, and you may see some duplicate highlights.
+        -- Instead of true it can also be a list of languages
+        additional_vim_regex_highlighting = false,
+    },
+}
 
 -- Do not source the default filetype.vim
 -- vim.g.did_load_filetypes = 1
@@ -191,7 +217,7 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
     buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
     buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+    -- buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
     buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
@@ -276,7 +302,66 @@ require'nvim-tree'.setup {
 }
 
 bmap_set(0, 'n', '<leader>ee', ':NvimTreeOpen<CR>', {noremap = true})
-bmap_set(0, 'n', '<leader>ee', ':NvimTreeOpen<CR>', {noremap = true})
+bmap_set(0, 'n', '<leader>ew', ':NvimTreeClose<CR>', {noremap = true})
+
+-- numToStr/Comment.nvim
+
+require("Comment").setup({
+    ---Add a space b/w comment and the line
+    ---@type boolean
+    padding = true,
+
+    ---Whether the cursor should stay at its position
+    ---NOTE: This only affects NORMAL mode mappings and doesn't work with dot-repeat
+    ---@type boolean
+    sticky = false,
+
+    ---Lines to be ignored while comment/uncomment.
+    ---Could be a regex string or a function that returns a regex string.
+    ---Example: Use '^$' to ignore empty lines
+    ---@type string|function
+    ignore = nil,
+
+    ---Create basic (operator-pending) and extended mappings for NORMAL + VISUAL mode
+    ---@type table
+    mappings = {
+        ---operator-pending mapping
+        ---Includes `gcc`, `gcb`, `gc[count]{motion}` and `gb[count]{motion}`
+        basic = true,
+        ---extra mapping
+        ---Includes `gco`, `gcO`, `gcA`
+        extra = true,
+        ---extended mapping
+        ---Includes `g>`, `g<`, `g>[count]{motion}` and `g<[count]{motion}`
+        extended = false,
+    },
+
+    ---LHS of toggle mapping in NORMAL + VISUAL mode
+    ---@type table
+    toggler = {
+        ---line-comment keymap
+        line = '<C-_>',
+        ---block-comment keymap
+        block = 'gbc',
+    },
+
+    ---LHS of operator-pending mapping in NORMAL + VISUAL mode
+    ---@type table
+    opleader = {
+        ---line-comment keymap
+        line = '<leader><C-_>',
+        ---block-comment keymap
+        block = 'gb',
+    },
+
+    ---Pre-hook, called before commenting the line
+    ---@type function|nil
+    pre_hook = nil,
+
+    ---Post-hook, called after commenting is done
+    ---@type function|nil
+    post_hook = nil,
+})
 
 -- lsp setup
 local sumneko_root_path = fn.stdpath('cache')..'/lspconfig/lua/lua-language-server'
