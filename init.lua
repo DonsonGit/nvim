@@ -6,8 +6,8 @@
 local fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 local g = vim.g -- a table to access global variables
 local opt = vim.opt -- to set options
--- local map_set = vim.api.nvim_set_keymap
-local bmap_set = vim.api.nvim_buf_set_keymap
+local map_set = vim.api.nvim_set_keymap
+-- local bmap_set = vim.api.nvim_buf_set_keymap
 
 -- Map leader to space
 g.mapleader = ' '
@@ -89,7 +89,7 @@ require('packer').startup(function (use)
     use "windwp/nvim-autopairs";
     use {"nvim-telescope/telescope.nvim", config = function () require'telescope'.setup{} end};
     use {"norcalli/nvim-colorizer.lua", config = function () require'colorizer'.setup{} end};
-    use {'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons', config = function () require'nvim-tree'.setup{} end};
+    use {'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons'};
     use {'nvim-lualine/lualine.nvim', config = function () require'lualine'.setup{options = {theme = 'gruvbox'}} end};
     use {"lewis6991/gitsigns.nvim", config = function () require'gitsigns'.setup{} end};
     use {"nvim-treesitter/nvim-treesitter", run = ':TSUpdate'};
@@ -104,15 +104,15 @@ end)
 
 -- hop
 
-bmap_set(0, 'n', '<leader>jj', ':HopWord<CR>', {noremap = true})
-bmap_set(0, 'n', '<leader>j1', ':HopChar1<CR>', {noremap = true})
-bmap_set(0, 'n', '<leader>j2', ':HopChar2<CR>', {noremap = true})
-bmap_set(0, 'n', '<leader>jl', ':HopLine<CR>', {noremap = true})
+map_set('n', '<leader>jj', ':HopWord<CR>', {noremap = true})
+map_set('n', '<leader>j1', ':HopChar1<CR>', {noremap = true})
+map_set('n', '<leader>j2', ':HopChar2<CR>', {noremap = true})
+map_set('n', '<leader>jl', ':HopLine<CR>', {noremap = true})
 
 -- nvim-telescope
 
-bmap_set(0, 'n', '<leader><C-p>', ':Telescope find_files<CR>', {noremap = true})
-bmap_set(0, 'n', '<leader><C-f>', ':Telescope live_grep<CR>', {noremap = true})
+map_set('n', '<leader><C-p>', ':Telescope find_files<CR>', {noremap = true})
+map_set('n', '<leader><C-f>', ':Telescope live_grep<CR>', {noremap = true})
 
 -- nvim-treesitter
 
@@ -208,11 +208,11 @@ require'nvim-tree'.setup {
   -- hijack netrw window on startup
   hijack_netrw        = true,
   -- open the tree when running this setup function
-  open_on_setup       = true,
+  open_on_setup       = false,
   -- will not open on setup if the filetype is in this list
   ignore_ft_on_setup  = {},
   -- closes neovim automatically when the tree is the last **WINDOW** in the view
-  auto_close          = true,
+  auto_close          = false,
   -- opens the tree when changing/opening a new tab if the tree wasn't previously opened
   open_on_tab         = false,
   -- hijacks new directory buffers when they are opened.
@@ -228,7 +228,7 @@ require'nvim-tree'.setup {
   update_cwd          = false,
   -- show lsp diagnostics in the signcolumn
   diagnostics = {
-    enable = false,
+    enable = true,
     icons = {
       hint = "",
       info = "",
@@ -276,8 +276,8 @@ require'nvim-tree'.setup {
   }
 }
 
-bmap_set(0, 'n', '<leader>ee', ':NvimTreeOpen<CR>', {noremap = true})
-bmap_set(0, 'n', '<leader>ew', ':NvimTreeClose<CR>', {noremap = true})
+map_set('n', '<leader>ee', ':NvimTreeToggle<CR>', {noremap = true})
+map_set('n', '<leader>er', ':NvimTreeRefresh<CR>', {noremap = true})
 
 -- numToStr/Comment.nvim
 
