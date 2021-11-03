@@ -4,3 +4,5 @@ autoload/*
 .netrwhist
 undo/*
 lua/*
+
+plugin/packer_compiled.lua
