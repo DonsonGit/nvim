@@ -7,7 +7,12 @@ local fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 local g = vim.g -- a table to access global variables
 local opt = vim.opt -- to set options
 local map_set = vim.api.nvim_set_keymap
+local debugMode = false
 -- local bmap_set = vim.api.nvim_buf_set_keymap
+
+if debugMode then
+    vim.lsp.set_log_level('debug')
+end
 
 -- Map leader to space
 g.mapleader = ' '
@@ -48,18 +53,17 @@ opt.linebreak = true
 opt.number = true
 opt.list = false
 opt.relativenumber = false
-opt.scrolloff = 4
 opt.shiftround = true
-opt.shiftwidth = 4
 opt.showmode = false
+opt.scrolloff = 4
 opt.sidescrolloff = 8
+opt.expandtab = true
 opt.signcolumn = "yes:1"
 opt.smartcase = true
 opt.smartindent = true
 opt.spelllang = {"en_gb"}
 opt.splitbelow = true
 opt.splitright = true
-opt.tabstop = 4
 opt.termguicolors = true
 opt.cc = "80"
 opt.mouse = "a"
@@ -69,6 +73,14 @@ opt.showtabline = 2
 opt.virtualedit = "block"
 opt.undofile = true
 opt.undodir = vim.fn.stdpath("config") .. "/undo"
+
+if vim.bo.filetype == 'c' or vim.bo.filetype == 'cpp' then
+    opt.tabstop = 2
+    opt.shiftwidth = 2
+else
+    opt.tabstop = 4
+    opt.shiftwidth = 4
+end
 
 -- plugins
 require('packer').startup(function (use)
@@ -96,6 +108,7 @@ require('packer').startup(function (use)
     use {"phaazon/hop.nvim", branch = 'v1', config = function () require'hop'.setup{} end };
     use "p00f/nvim-ts-rainbow";
     use "onsails/lspkind-nvim";
+    -- use 'akinsho/bufferline.nvim';
     -- "windwp/nvim-ts-autotag";
     -- "f3fora/cmp-spell";
     -- "jose-elias-alvarez/null-ls.nvim";
@@ -341,8 +354,7 @@ require("Comment").setup({
 -- lsp setup
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 local nvim_lsp = require('lspconfig')
-
-local on_attach = function(client, bufnr)
+local on_attach = function(_, bufnr)
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
@@ -364,8 +376,8 @@ local on_attach = function(client, bufnr)
     -- buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-    buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-    buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+    buf_set_keymap('n', '<leader>lq', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+    buf_set_keymap('n', '<leader>lf', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 end
 
 local sumneko_root_path = fn.stdpath('cache')..'/lspconfig/lua/lua-language-server'
@@ -377,7 +389,7 @@ nvim_lsp.sumneko_lua.setup {
     settings = {
         Lua = {
             runtime = {
-                version = 'Lua 5.3',
+                version = 'LuaJIT',
                 path = vim.split(package.path, ';'),
             },
             diagnostics = {
@@ -395,11 +407,10 @@ nvim_lsp.sumneko_lua.setup {
     },
 }
 
-nvim_lsp.bashls.setup{
-    on_attach = on_attach;
-}
+
 nvim_lsp.ccls.setup {
     on_attach = on_attach;
+    capabilities = capabilities;
     cmd = {'ccls'};
     init_options = {
         compilationDatabaseDirectory = "./build/";
@@ -412,9 +423,48 @@ nvim_lsp.ccls.setup {
     }
 }
 
-nvim_lsp.gopls.setup{on_attach = on_attach;}
-nvim_lsp.html.setup{on_attach = on_attach;}
-nvim_lsp.jsonls.setup{on_attach = on_attach;}
-nvim_lsp.tsserver.setup{on_attach = on_attach;}
-nvim_lsp.pyright.setup{on_attach = on_attach;}
+nvim_lsp.gopls.setup{
+    on_attach = on_attach;
+    capabilities = capabilities;
+    cmd = {"gopls", "serve"};
+    settings = {
+        gopls = {
+            analyses = {unusedparams = true},
+        },
+        staticcheck = true,
+    };
+}
 
+nvim_lsp.bashls.setup{on_attach = on_attach;capabilities = capabilities;}
+nvim_lsp.html.setup{on_attach = on_attach;capabilities = capabilities;}
+nvim_lsp.jsonls.setup{on_attach = on_attach;capabilities = capabilities;}
+nvim_lsp.tsserver.setup{on_attach = on_attach;capabilities = capabilities;}
+nvim_lsp.pyright.setup{on_attach = on_attach;capabilities = capabilities;}
+
+-- auto format on save
+
+vim.api.nvim_command[[
+    autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
+]]
+
+-- run current file
+
+local runTypes = {
+    sh = function () vim.cmd[[:!time bash %]] end;
+    go = function () vim.cmd[[:!time go run %]] end;
+    python = function ()
+        vim.cmd[[
+            set splitbelow
+            :sp
+            :term python %
+        ]]
+    end;
+    lua = function () vim.cmd[[:source %]] end;
+    vlua = function () vim.cmd[[:!time source %]] end
+}
+
+function DCompileRun()
+    runTypes[vim.bo.filetype]()
+end
+
+map_set('n', '<leader>pr', '<cmd>lua DCompileRun()<CR>', {noremap = true, silent = true})
