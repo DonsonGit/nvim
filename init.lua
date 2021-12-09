@@ -102,12 +102,13 @@ require('packer').startup(function (use)
     use {"nvim-telescope/telescope.nvim", config = function () require'telescope'.setup{} end};
     use {"norcalli/nvim-colorizer.lua", config = function () require'colorizer'.setup{} end};
     use {'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons'};
-    use {'nvim-lualine/lualine.nvim', config = function () require'lualine'.setup{options = {theme = 'gruvbox'}} end};
+    -- use {'nvim-lualine/lualine.nvim', config = function () require'lualine'.setup{options = {theme = 'gruvbox'}} end};
     use {"lewis6991/gitsigns.nvim", config = function () require'gitsigns'.setup{} end};
     use {"nvim-treesitter/nvim-treesitter", run = ':TSUpdate'};
     use {"phaazon/hop.nvim", branch = 'v1', config = function () require'hop'.setup{} end };
     use "p00f/nvim-ts-rainbow";
     use "onsails/lspkind-nvim";
+    use "ojroques/nvim-hardline"
     -- use 'akinsho/bufferline.nvim';
     -- "windwp/nvim-ts-autotag";
     -- "f3fora/cmp-spell";
@@ -446,6 +447,35 @@ nvim_lsp.pyright.setup{on_attach = on_attach;capabilities = capabilities;}
 vim.api.nvim_command[[
     autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()
 ]]
+
+-- nvim-hardline
+
+require('hardline').setup{
+    bufferline = true,  -- enable bufferline
+    bufferline_settings = {
+        exclude_terminal = true,  -- don't show terminal buffers in bufferline
+        show_index = false,        -- show buffer indexes (not the actual buffer numbers) in bufferline
+    },
+    theme = 'default',   -- change theme
+    sections = {         -- define sections
+        {class = 'mode', item = require('hardline.parts.mode').get_item},
+        {class = 'high', item = require('hardline.parts.git').get_item, hide = 100},
+        {class = 'med', item = require('hardline.parts.filename').get_item},
+        '%<',
+        {class = 'med', item = '%='},
+        {class = 'low', item = require('hardline.parts.wordcount').get_item, hide = 100},
+        {class = 'error', item = require('hardline.parts.lsp').get_error},
+        {class = 'warning', item = require('hardline.parts.lsp').get_warning},
+        {class = 'warning', item = require('hardline.parts.whitespace').get_item},
+        {class = 'high', item = require('hardline.parts.filetype').get_item, hide = 80},
+        {class = 'mode', item = require('hardline.parts.line').get_item},
+    },
+}
+
+map_set('n', '<leader>bb', '<cmd>:ls<CR>', {noremap = true, silent = true})
+for i = 1, 9 do
+    map_set('n', '<leader>b'..i, '<cmd>:b'..i..'<CR>', {noremap = true, silent = true})
+end
 
 -- run current file
 
