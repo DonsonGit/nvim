@@ -25,10 +25,10 @@ end
 
 -- settings
 vim.o.background = "dark"
-vim.cmd([[
-    syntax enable
+vim.api.nvim_command[[
     colorscheme gruvbox
-]])
+]]
+
 opt.backspace = {"indent", "eol", "start"}
 opt.clipboard = "unnamedplus"
 opt.completeopt = "menu,menuone,noselect"
@@ -278,7 +278,7 @@ require'nvim-tree'.setup {
     -- side of the tree, can be one of 'left' | 'right' | 'top' | 'bottom'
     side = 'left',
     -- if true the tree will resize itself after opening a file
-    auto_resize = false,
+    auto_resize = true,
     mappings = {
       -- custom only false will merge the list with the default mappings
       -- if true, it will only use your list to set the mappings
