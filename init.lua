@@ -475,6 +475,7 @@ require('hardline').setup{
 map_set('n', '<leader>bb', '<cmd>:ls<CR>', {noremap = true, silent = true})
 for i = 1, 9 do
     map_set('n', '<leader>b'..i, '<cmd>:b'..i..'<CR>', {noremap = true, silent = true})
+    map_set('n', '<leader>bd'..i, '<cmd>:bd'..i..'<CR>', {noremap = true, silent = true})
 end
 
 -- run current file
