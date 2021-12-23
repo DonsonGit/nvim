@@ -28,7 +28,6 @@ vim.o.background = "dark"
 vim.api.nvim_command[[
     colorscheme gruvbox
 ]]
-
 opt.backspace = {"indent", "eol", "start"}
 opt.clipboard = "unnamedplus"
 opt.completeopt = "menu,menuone,noselect"
@@ -473,10 +472,22 @@ require('hardline').setup{
 }
 
 map_set('n', '<leader>bb', '<cmd>:ls<CR>', {noremap = true, silent = true})
-for i = 1, 9 do
-    map_set('n', '<leader>b'..i, '<cmd>:b'..i..'<CR>', {noremap = true, silent = true})
-    map_set('n', '<leader>bd'..i, '<cmd>:bd'..i..'<CR>', {noremap = true, silent = true})
-end
+map_set('n', '<leader>bn', '<cmd>:bn<CR>', {noremap = true, silent = true})
+map_set('n', '<leader>bp', '<cmd>:bp<CR>', {noremap = true, silent = true})
+map_set('n', '<leader>bj', ':BufJumpTo ',  {noremap = true, silent = true})
+map_set('n', '<leader>bd', ':bd ',         {noremap = true, silent = true})
+map_set('n', '<leader>bc', '<cmd>:BufCloseCur<CR>',     {noremap = true, silent = true})
+map_set('n', '<leader>bo', '<cmd>:BufCloseOthers<CR>',  {noremap = true, silent = true})
+
+-- window jump
+
+map_set('n', '<leader>ww', '<C-w>w',       {noremap = true, silent = true})
+map_set('n', '<leader>wj', '<C-w>j',       {noremap = true, silent = true})
+map_set('n', '<leader>wh', '<C-w>h',       {noremap = true, silent = true})
+map_set('n', '<leader>wk', '<C-w>k',       {noremap = true, silent = true})
+map_set('n', '<leader>wl', '<C-w>l',       {noremap = true, silent = true, script = true})
+map_set('n', '<leader>wc', '<cmd>:q<CR>',  {noremap = true, silent = true})
+map_set('n', '<leader>qc', '<cmd>:ccl<CR>',{noremap = true, silent = true})
 
 -- run current file
 
@@ -491,7 +502,8 @@ local runTypes = {
         ]]
     end;
     lua = function () vim.cmd[[:source %]] end;
-    vlua = function () vim.cmd[[:!time source %]] end
+    vlua = function () vim.cmd[[:!time source %]] end;
+    c = function () vim.cmd[[:!time gcc main.c -o tst && ./tst]] end
 }
 
 function DCompileRun()
