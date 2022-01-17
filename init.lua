@@ -101,7 +101,7 @@ require('packer').startup(function (use)
     use {"nvim-telescope/telescope.nvim", config = function () require'telescope'.setup{} end};
     use {"norcalli/nvim-colorizer.lua", config = function () require'colorizer'.setup{} end};
     use {'kyazdani42/nvim-tree.lua', requires = 'kyazdani42/nvim-web-devicons'};
-    -- use {'nvim-lualine/lualine.nvim', config = function () require'lualine'.setup{options = {theme = 'gruvbox'}} end};
+    use {'nvim-lualine/lualine.nvim', config = function () require'lualine'.setup{options = {theme = 'gruvbox'}} end};
     use {"lewis6991/gitsigns.nvim", config = function () require'gitsigns'.setup{} end};
     use {"nvim-treesitter/nvim-treesitter", run = ':TSUpdate'};
     use {"phaazon/hop.nvim", branch = 'v1', config = function () require'hop'.setup{} end };
@@ -445,6 +445,7 @@ nvim_lsp.gopls.setup{
             analyses = {unusedparams = true},
         },
         staticcheck = true,
+        gofumpt = true,
     };
 }
 
